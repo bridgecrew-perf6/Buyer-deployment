@@ -1,0 +1,92 @@
+{% extends "layout.html" %}
+{% block content %}
+<div>
+  <div class="float-left">
+    <h3>{{ title }}</h3>
+  </div>
+  <div class="float-right">
+    <form class="form-inline" action="{{ url_for('orders.buyerAction') }}" method="post">    
+      <div class="custom-control custom-checkbox my-1 mr-sm-1">
+        <select class="custom-select" name="buyeraction" id="inlineFormCustomSelectPref">
+          {% if bType != 'cart' %}
+            <option value="1 w" selected>Buy All items</option>
+            <option value="2 c">Add All to Cart</option>
+            <option value="-3">Empty Wishlist</option>
+          {% elif bType != 'wishlist' %}
+            <option value="1 c" selected>Buy All items</option>
+            <option value="3 w">Add All to Wishlist</option>
+            <option value="-2">Empty Cart</option>
+          {% endif %}
+        </select>
+      </div>
+      <button type="submit" class="btn btn-primary my-1">Submit</button>
+    </form>
+  </div>
+</div>
+<br>
+<br>
+<hr>
+  <div class="container">
+      <div class="row">
+        {% for prod in prods %}
+        <div class="col-sm-auto col-md-auto border border-primary border border-lg m-3">
+          <article class="media content-section">
+            <div class="media-body">
+              <div class="article-metadata">
+                  <div class="row">
+                    {% if bType == "order" %}
+                      <div class="col">Order Id: {{ prod.order_id }}</div>
+                      <div class="col" style="background-color: rgba(72, 195, 195, 0.561); color: rgb(1, 104, 64); margin-top: 1%;">Status: {{ prod.order_status }}</div>
+                      <hr>
+                    {% endif %}
+                  </div>
+                <div>{{ prod.prod_name }}</div>
+                <span style="font-size: 15px; ">{{ prod.prod_desc }}</span>
+                <hr>
+                <img class="img-thumbnail img-fluid" title="My Prod" height="200" width="400" src=" {{ prod.prod_img }} ">
+                <hr>
+                Prices: <span style="font-size: 30px; ">{{ prod.prod_price }}</span>
+                <hr>
+                {% if title != 'Your History' %}
+                  <form method = "POST" action = "{{ url_for('orders.buyerAction') }}">
+                    <div class="form-row align-items-center">
+                      <div class="col-auto">
+                        <select class="custom-select" id="inlineFormCustomSelect" name="buyeraction">
+                          {% if bType == "order" %} 
+                            <option value="0 Cancelled {{ prod.order_id }} " selected>Cancel Order</option>
+                            <option value="0 Received {{ prod.order_id }} " selected>Order Received</option>
+                          {% else %}
+                              <option value="1 {{ prod.prod_id }} {{ prod.seller_id }}" selected>Buy</option>
+                            {% if bType != 'cart' %} 
+                              <option value="2 {{ prod.prod_id }}">Add to Cart</option>
+                            {% else %}
+                              <option value="-2 {{ prod.prod_id }}">Remove from Cart</option>
+                            {% endif %}
+                            {% if bType != 'wishlist' %} 
+                              <option value="3 {{ prod.prod_id }}">Add to Wishlist</option>
+                            {% else %} 
+                              <option value="-3 {{ prod.prod_id }}">Remove from Wishlist</option>
+                            {% endif %}
+                          {% endif %}
+                        </select>
+                      </div>
+                      <div class="col-auto">
+                        <button type="submit" class="btn btn-primary">Proceed</button>
+                      </div>
+                    </div>
+                  </form>
+                {% endif %}
+                <hr>
+                <h6>Sold by:</h6>
+                <h6><small>{{ prod.prod_shop }}</small></h6>
+                <h6>Address:</h6>
+                <h6><small><i>{{ prod.prod_seller }}</i></small></h6>
+              </div>
+            </div>
+          </article>
+        </div>
+      {% endfor %}
+      </div>
+    </div>
+  </div>
+{% endblock content %}
